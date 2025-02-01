@@ -20,11 +20,13 @@
       }: {
         packages.default = let
           docset-feeds = inputs'.docsets.legacyPackages.mkNixDocsetFeed {baseURL = "https://boinkor-net.github.io/nix-dash-docsets";};
-        in pkgs.runCommand  "daily-docsets" {} ''
-          mkdir -p $out
-          ln -s ${docset-feeds} $out/daily
-          cp ${./index.html} $out/index.html
-        '';
+        in
+          pkgs.runCommand "daily-docsets" {} ''
+            mkdir -p $out
+            ln -s ${docset-feeds} $out/daily
+            cp ${./index.html} $out/index.html
+          '';
+        formatter = pkgs.alejandra;
       };
       flake = {};
     };
