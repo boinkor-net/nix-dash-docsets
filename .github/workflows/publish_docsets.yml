@@ -1,0 +1,21 @@
+name: "Publish docsets to gh pages"
+on:
+  workflow_call:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  nix_build:
+    uses: "boinkor-net/ci-baseline-nix/.github/workflows/build.yml@main"
+    strategy:
+      matrix:
+        derivation:
+          - nix
+          - nix-darwin
+          - nixos
+          - nixpkgs
+    with:
+      root: "."
+      installable: ${matrix.derivation}-docset
