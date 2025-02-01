@@ -7,15 +7,18 @@ on:
       - main
 
 jobs:
-  nix_build:
-    uses: "boinkor-net/ci-baseline-nix/.github/workflows/build.yml@main"
-    strategy:
-      matrix:
-        derivation:
-          - nix
-          - nix-darwin
-          - nixos
-          - nixpkgs
-    with:
-      root: "."
-      installable: ${matrix.derivation}-docset
+  flake_build:
+    name: "Build nix docsets and upload"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@V28
+      - uses: DeterminateSystems/magic-nix-cache-action@v8
+      - run: nix flake update
+        working-directory: pages
+      - run: nix build "./pages"
+      - name: Upload static files as artifact
+        id: deployment
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: result/
