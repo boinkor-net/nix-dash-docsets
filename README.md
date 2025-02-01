@@ -15,7 +15,13 @@ All of them (except for NixOS, which requires linux platforms) are portable and 
 
 # Usage
 
-The feeds here are exposed as a function on `legacyPackages`:
+## Doc feeds for the latest version of nixpkgs/nix-darwin/etc
+
+The docsets get built daily and deployed to Github Pages, see the [nix dash docsets overview](https://boinkor-net.github.io/nix-dash-docsets/).
+
+## Using it in your system configuration flake
+
+In a nix flake, you'll generate the feeds, which are exposed as a function on this flake's `legacyPackages` attribute:
 
 ## `nix-dash-docsets.legacyPackages.${system}.mkNixDocsetFeed {baseURL}`
 
