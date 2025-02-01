@@ -5,6 +5,9 @@ on:
   push:
     branches:
       - main
+  schedule:
+    # Every day at 19:37 UTC:
+    - cron: "19 37 * * *"
 
 jobs:
   build:
@@ -24,7 +27,7 @@ jobs:
           path: result/
 
   deploy:
-    if: always() && github.event_name == 'push'
+    if: always() && github.ref == 'refs/heads/main'
     permissions:
       pages: write
       id-token: write
