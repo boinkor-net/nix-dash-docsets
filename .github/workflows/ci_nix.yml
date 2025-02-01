@@ -13,12 +13,4 @@ jobs:
     with:
       root: "."
 
-  build:
-    uses: "boinkor-net/ci-baseline-nix/.github/workflows/build.yml@main"
-    strategy:
-      matrix:
-        derivation: [""]
-    with:
-      root: "."
-      installable: ${{matrix.derivation}}
 
