@@ -1,0 +1,38 @@
+diff --git a/dashing.go b/dashing.go
+index 1edf295..6112346 100644
+--- a/dashing.go
++++ b/dashing.go
+@@ -628,14 +628,27 @@ func attr(node *html.Node, key string) string {
+ // NOTE: NOT THREADSAFE. If we switch to goroutines, swith to atom int.
+ var tcounter int
+ 
+-func anchor(node *html.Node) string {
+-	if node.Type == html.ElementNode && node.Data == "a" {
+-		for _, a := range node.Attr {
+-			if a.Key == "name" {
+-				return a.Val
+-			}
++// nodeAttrValue returns the value for a node attribute, and a flag
++// indicating whether that node has the attribute.
++func nodeAttrValue(node *html.Node, attrName string) (string, bool) {
++	if node.Type != html.ElementNode {
++		return "", false
++	}
++	for _, a := range node.Attr {
++		if a.Key == attrName {
++			return a.Val, true
+ 		}
+ 	}
++	return "", false
++}
++
++func anchor(node *html.Node) string {
++	if idVal, ok := nodeAttrValue(node, "id"); ok {
++		return idVal
++	}
++	if nameVal, ok := nodeAttrValue(node, "name"); ok && node.Data == "a" {
++		return nameVal
++	}
+ 	tname := fmt.Sprintf("autolink-%d", tcounter)
+ 	link := autolink(tname)
+ 	node.Parent.InsertBefore(link, node)
