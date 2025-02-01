@@ -13,10 +13,28 @@ The flake in this repo contains a package per docset for:
 
 All of them (except for NixOS, which requires linux platforms) are portable and can be built anywhere. I would suggest deploying them on a linux machine with a static file server serving the .tgz and .xml files.
 
-## Incomplete
+# Usage
+
+The feeds here are exposed as a function on `legacyPackages`:
+
+## `nix-dash-docsets.legacyPackages.${system}.mkNixDocsetFeed {baseURL}`
+
+Parameters passed via attrset:
+
+* `baseURL` - The absolute base URL (http or https) serving the generated directory. Dash can not deal with relative URLs here, and it requires a http or https URL in its docset feeds.
+
+This function builds the available docsets on the platform identified by `system` and writes them to its output directory.
+
+Once generated, you can add each of the following XML files as feeds in Dash's "Main Docsets" (under "Downloads") preferences, after clicking "+":
+
+* `{baseURL}/nix.xml`
+* `{baseURL}/nixos.xml`
+* `{baseURL}/nixpkgs.xml`
+* `{baseURL}/nix-darwin.xml`
+
+## Status: Incomplete
 
 This flake is by far not complete yet. Things I'd like to do (that work in my personal system config flake, which is of no benefit to you):
 
-* Generate a feed .xml that dash can subscribe to, with a "version" per aspect of the documentation
 * Add a `nixosModules.default` and `darwinModules.default` that allows configuring where the output packages go
 * Configure github actions to publish a static page of the generated docsets, with auto-updates.

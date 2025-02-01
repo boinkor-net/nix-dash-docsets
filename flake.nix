@@ -22,32 +22,33 @@
         pkgs,
         system,
         ...
-      }: {
-        packages = let
-          inherit (pkgs) lib;
-          source = with lib.fileset;
-            toSource {
-              root = ./.;
-              fileset = union (gitTracked ./lib) (gitTracked ./packages);
-            };
-          myLib = pkgs.callPackage "${source}/lib" {inherit myLib myPkgs;};
-          myPkgs = pkgs.lib.filterAttrs matchesSystem (pkgs.callPackage "${source}/packages" {
-            inherit myLib;
-            flake-inputs = inputs;
-          });
-          matchesSystem = n: pkg: (n
-            != "override"
-            && n != "overrideDerivation"
-            && builtins.elem system
-            (pkgs.lib.recursiveUpdate
-              {meta = {platforms = pkgs.lib.platforms.all;};}
-              pkg)
-            .meta
-            .platforms);
-        in
-          myPkgs;
+      }: let
+        inherit (pkgs) lib;
+        source = with lib.fileset;
+          toSource {
+            root = ./.;
+            fileset = union (gitTracked ./lib) (gitTracked ./packages);
+          };
+        myLib = pkgs.callPackage "${source}/lib" {inherit myLib myPkgs;};
+        myPkgs = pkgs.lib.filterAttrs matchesSystem (pkgs.callPackage "${source}/packages" {
+          inherit myLib;
+          flake-inputs = inputs;
+        });
+        matchesSystem = n: pkg: (n
+          != "override"
+          && n != "overrideDerivation"
+          && builtins.elem system
+          (pkgs.lib.recursiveUpdate
+            {meta = {platforms = pkgs.lib.platforms.all;};}
+            pkg)
+          .meta
+          .platforms);
+      in {
+        packages = myPkgs;
+
+        legacyPackages.mkNixDocsetFeed = pkgs.callPackage ./src/mkNixDocsetFeed {inherit myPkgs;};
+
         formatter = pkgs.alejandra;
       };
-      flake = {};
     };
 }

@@ -18,16 +18,6 @@
   meta ? {platforms = lib.platforms.all;},
 }: let
   dashing = myPkgs.dashing;
-  # TODO: Don't generate the feed xml here, do it in the nixos module!
-  docsetFeedXML = writeTextFile {
-    name = "${pname}.xml";
-    text = ''
-      <entry>
-        <version>${version}</version>
-        <url>https://TODO/${pname}.tgz</url>
-      </entry>
-    '';
-  };
   config = writeTextFile {
     name = "dashing.json";
     text = builtins.toJSON (dashingConfig // {package = pname;});
@@ -49,7 +39,6 @@ in
     installPhase = ''
       mkdir -p $out/
       tar zcf $out/${pname}.tgz ./${pname}.docset
-      cp ${docsetFeedXML} $out/${pname}.xml
     '';
 
     nativeCheckInputs = [sqlite];
