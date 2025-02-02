@@ -19,7 +19,7 @@
         ...
       }: {
         packages.default = let
-          docset-feeds = inputs'.docsets.legacyPackages.mkNixDocsetFeed {baseURL = "https://boinkor-net.github.io/nix-dash-docsets";};
+          docset-feeds = inputs'.docsets.legacyPackages.mkNixDocsetFeed {baseURL = "https://boinkor-net.github.io/nix-dash-docsets/daily";};
         in
           pkgs.runCommand "daily-docsets" {} ''
             mkdir -p $out
