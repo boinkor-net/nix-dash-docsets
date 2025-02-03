@@ -7,7 +7,7 @@
   symlinkJoin,
 }: let
   docsets = with myPkgs;
-    [nix-docset nix-darwin-docset nixpkgs-docset]
+    [home-manager nix-docset nix-darwin-docset nixpkgs-docset]
     ++ (
       if stdenv.isLinux
       then [nixos-docset]

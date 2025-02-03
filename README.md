@@ -10,6 +10,7 @@ The flake in this repo contains a package per docset for:
 * nixpkgs, the package collection and standard environment for building more packages
 * NixOS, the linux system based on nixpkgs
 * nix-darwin, the darwin configuration manager based on nixpkgs
+* home-manager, the home directory manager based on nixpkgs
 
 All of them (except for NixOS, which requires linux platforms) are portable and can be built anywhere. I would suggest deploying them on a linux machine with a static file server serving the .tgz and .xml files.
 
@@ -37,6 +38,7 @@ Once generated, you can add each of the following XML files as feeds in Dash's "
 * `{baseURL}/nixos.xml`
 * `{baseURL}/nixpkgs.xml`
 * `{baseURL}/nix-darwin.xml`
+* `{baseURL}/home-manager.xml`
 
 ## Status: Incomplete
 
