@@ -15,14 +15,23 @@
     );
 in
   {baseURL}: let
-    feeds = builtins.map (drv:
-      writeTextDir "${drv.pname}.xml" ''
+    feeds = lib.mapConcat (drv:
+      [(writeTextDir "${drv.pname}.xml" ''
         <entry>
-            <name>${drv.pname}</name>
-            <url>${baseURL}/${drv.pname}.tgz</url>
-            <version>${drv.version}</version>
-          </entry>
-      '')
+          <name>${drv.pname}</name>
+          <url>${baseURL}/${drv.pname}.tgz</url>
+          <version>${drv.version}</version>
+        </entry>
+      ''
+      )
+      (writeTextDir "${drv.pname}-zeal.xml" ''
+        <entry>
+          <name>${drv.pname}</name>
+          <url>${baseURL}/${drv.pname}-zeal.tgz</url>
+          <version>${drv.version}</version>
+        </entry>
+      ''
+      )])
     docsets;
   in
     symlinkJoin {
