@@ -14,18 +14,19 @@
       else []
     );
 in
-  {baseURL}: let
-    feeds = builtins.map (drv:
-      writeTextDir "${drv.pname}.xml" ''
-        <entry>
-            <name>${drv.pname}</name>
-            <url>${baseURL}/${drv.pname}.tgz</url>
-            <version>${drv.version}</version>
-          </entry>
-      '')
-    docsets;
+  {
+    baseURL,
+    zealCompat ? false,
+  }: let
+    feeds = builtins.map (drv: drv.updateFeed {inherit baseURL drv;}) docsets;
   in
     symlinkJoin {
       name = "nix-docset-feeds";
-      paths = docsets ++ feeds;
+      paths =
+        feeds
+        ++ (
+          if zealCompat
+          then builtins.map (drv: drv.zeal) docsets
+          else docsets
+        );
     }
