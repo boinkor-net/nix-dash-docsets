@@ -20,10 +20,15 @@
       }: {
         packages.default = let
           docset-feeds = inputs'.docsets.legacyPackages.mkNixDocsetFeed {baseURL = "https://boinkor-net.github.io/nix-dash-docsets/daily";};
+          docset-feeds-zeal = inputs'.docsets.legacyPackages.mkNixDocsetFeed {
+            baseURL = "https://boinkor-net.github.io/nix-dash-docsets/daily-zeal";
+            zealCompat = true;
+          };
         in
           pkgs.runCommand "daily-docsets" {} ''
             mkdir -p $out
             ln -s ${docset-feeds} $out/daily
+            ln -s ${docset-feeds-zeal} $out/daily-zeal
             cp ${./index.html} $out/index.html
           '';
         formatter = pkgs.alejandra;
