@@ -5,6 +5,7 @@
   sqlite,
   lib,
   stdenv,
+  writeTextDir,
   callPackage,
 }: {
   pname,
@@ -36,10 +37,11 @@ in
       ${patchPhase}
     '';
 
+    outputs = ["out" "zeal"];
     installPhase = ''
-      mkdir -p $out/
+      mkdir -p $out/ $zeal/
       tar -zcf $out/${pname}.tgz "${pname}.docset"
-      tar -zcf $out/${pname}-zeal.tgz -C "${pname}.docset" .
+      tar -zcf $zeal/${pname}.tgz -C "${pname}.docset" .
     '';
 
     nativeCheckInputs = [sqlite];
@@ -64,4 +66,17 @@ in
           [ "$(sqlite3 -batch -bail ${pname}.docset/Contents/Resources/docSet.dsidx -cmd "select count(type) from searchIndex where name = '${name}'" </dev/null)" = 0 ]
         '')
         absent);
+
+    passthru.updateFeed = {
+      baseURL,
+      drv,
+    }: (
+      writeTextDir "${drv.pname}.xml" ''
+        <entry>
+          <name>${drv.pname}</name>
+          <url>${baseURL}/${drv.pname}.tgz</url>
+          <version>${drv.version}</version>
+        </entry>
+      ''
+    );
   }
