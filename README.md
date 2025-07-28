@@ -46,4 +46,3 @@ Once generated, you can add each of the following XML files as feeds in Dash's "
 This flake is by far not complete yet. Things I'd like to do (that work in my personal system config flake, which is of no benefit to you):
 
 - Add a `nixosModules.default` and `darwinModules.default` that allows configuring where the output packages go
-- Configure github actions to publish a static page of the generated docsets, with auto-updates.
