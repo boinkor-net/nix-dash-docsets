@@ -1,6 +1,7 @@
 {
   lix,
   myLib,
+  fetchurl,
   ...
 }: let
   nixDocs = lix.doc;
@@ -66,7 +67,10 @@ in
     version = lix.version;
     src = "${nixDocs}/share/doc/nix/manual";
     patchPhase = ''
-      cp "${nixDocs}/share/doc/nix/manual/favicon.png" ./
+      cp "${fetchurl {
+        url = "https://lix.systems/favicon-32.png";
+        hash = "sha256-cfz6TSNaJ6IFLsy1p5AtrlwryMzGleBCcVytbh4VKOs=";
+      }}" ./favicon.png
       rm print.html
     '';
 
