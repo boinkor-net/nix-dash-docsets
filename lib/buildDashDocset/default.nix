@@ -12,11 +12,14 @@
   version,
   src,
   dashingConfig,
+  verbose ? false,
   checkExpectations ? {},
   checkAbsences ? [],
   patchPhase,
   nativeBuildInputs ? [],
-  meta ? {platforms = lib.platforms.all;},
+  meta ? {
+    platforms = lib.platforms.all;
+  },
 }: let
   dashing = myPkgs.dashing;
   config = writeTextFile {
@@ -25,11 +28,20 @@
   };
 in
   stdenv.mkDerivation {
-    inherit pname version src meta;
+    inherit
+      pname
+      version
+      src
+      meta
+      ;
     nativeBuildInputs = [dashing] ++ nativeBuildInputs;
 
     buildPhase = ''
-      dashing build
+      dashing build ${
+        if !verbose
+        then " >/dev/null"
+        else ""
+      }
     '';
 
     patchPhase = ''
@@ -37,7 +49,10 @@ in
       ${patchPhase}
     '';
 
-    outputs = ["out" "zeal"];
+    outputs = [
+      "out"
+      "zeal"
+    ];
     installPhase = ''
       mkdir -p $out/ $zeal/
       tar -zcf $out/${pname}.tgz "${pname}.docset"
@@ -70,13 +85,11 @@ in
     passthru.updateFeed = {
       baseURL,
       drv,
-    }: (
-      writeTextDir "${drv.pname}.xml" ''
-        <entry>
-          <name>${drv.pname}</name>
-          <url>${baseURL}/${drv.pname}.tgz</url>
-          <version>${drv.version}</version>
-        </entry>
-      ''
-    );
+    }: (writeTextDir "${drv.pname}.xml" ''
+      <entry>
+        <name>${drv.pname}</name>
+        <url>${baseURL}/${drv.pname}.tgz</url>
+        <version>${drv.version}</version>
+      </entry>
+    '');
   }
