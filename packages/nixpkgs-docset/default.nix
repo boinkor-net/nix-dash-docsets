@@ -24,17 +24,24 @@
       # recognize :has(>.titlepage), but it does recognize
       # :haschild(.titlepage), which isn't supported by chrome
       # devtools' $$ function. Gotta love this ecosystem.
-      buildHelperFunctions = lib.genAttrs (map (sec: "div:haschild(.titlepage:has(${sec})) div.titlepage code.literal")
+      buildHelperFunctions = lib.genAttrs (
+        map
+        (sec: "div:haschild(.titlepage:has(${sec})) div.titlepage code.literal")
         [
           "#chap-pkgs-fetchers"
           "#chap-trivial-builders"
           "#chap-testers"
           "#chap-devShellTools"
           "#sec-vm-tools"
-        ]) (n: "Function");
+        ]
+      ) (n: "Function");
     in
       {
         "div.section:has(#sec-functions-library) h4.title" = {
+          type = "Function";
+          requiretext = "^lib.";
+        };
+        "div.section:has(#sec-functions-library) h3.title" = {
           type = "Function";
           requiretext = "^lib.";
         };
@@ -53,8 +60,9 @@
           requiretext = "^(.{1,3}|[^N].*|N[^o].*|No[^t].*|Not[^e].*|[^N].*)$";
         };
         "div.chapter:has(#chap-hooks) h2.title" = "Hook";
+        "div.section:has(#ssec-setup-hooks) h4.title" = "Hook";
 
-        "div.part>.titlepage h1.title" = "Section";
+        "div.part>.titlepage h2.title" = "Section";
 
         "div.chapter:has(#chap-packages) div.section>div.titlepage h2.title" = "Guide";
         "div.chapter:has(#chap-language-support) div.section>div.titlepage h2.title" = "Guide";
@@ -74,6 +82,7 @@ in
       "lib.versions.major" = "Function";
       "streamNixShellImage" = "Function";
       "lib.fileset.fromSource" = "Function";
+      "fetchurl" = "Function";
       "buildGoModule" = "Function";
       "Autoconf" = "Hook";
       "Emacs" = "Guide";
