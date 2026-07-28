@@ -16,7 +16,8 @@
     name = "nixos-render-docs";
     runtimeInputs = [myPkgs.nixos-render-docs-without-xref];
     text = ''
-      exec nixos-render-docs -j "$NIX_BUILD_CORES" manual html \
+      exec nixos-render-docs -j "$NIX_BUILD_CORES" \
+           manual html \
            --manpage-urls ${writeText "manpage-urls.json" "{}"} \
            --revision ${lib.escapeShellArg "0"} \
            --generator "nixos-render-docs ${lib.version}" \
@@ -26,8 +27,7 @@
            --script ./highlightjs/loader.js \
            --script ./anchor.min.js \
            --script ./anchor-use.js \
-           --toc-depth 1 \
-           --chunk-toc-depth 1 \
+           --sidebar-depth 1 \
            "$1" \
            "$(basename "$1" .md)".html
     '';
