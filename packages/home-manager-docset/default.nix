@@ -21,44 +21,29 @@
     # below for the "Note" exclusion one) instead.
 
     selectors = {
-      ".part>.titlepage .title" = "Section";
-      ".book:has(#ch-options) dt" = {
-        type = "Option";
-      };
-      ".part:has(#ch-usage) .section>.titlepage .title" = "Guide";
+      "main > h1" = "Section";
 
-      ".appendix:has(#ch-nixos-options) dt" = {
+      # These three entries all are different and match the same path, but they are all needed
+      # because there's no other way to discern the option kinds from each other. Thanks, mdbook.
+      "main > h2" = {
+        type = "Option";
+        matchpath = "options/home-manager/.*\\.html";
+      };
+      "#mdbook-content > main > h2" = {
         type = "Option";
         regexp = "$";
         replacement = " (NixOS option)";
+        matchpath = "options/nixos/.*\\.html";
       };
-      ".appendix:has(#ch-nix-darwin-options) dt" = {
+      ".content > main > h2" = {
         type = "Option";
         regexp = "$";
         replacement = " (nix-darwin option)";
+        matchpath = "options/nix-darwin/.*\\.html";
       };
     };
     # icon32x32 = "favicon.png";
     allowJS = true;
-  };
-
-  wrapped-render-docs = writeShellApplication {
-    name = "nixos-render-docs";
-    runtimeInputs = [myPkgs.nixos-render-docs-without-xref];
-    text = ''
-      exec nixos-render-docs -j "$NIX_BUILD_CORES" manual html \
-           --manpage-urls ${writeText "manpage-urls.json" "{}"} \
-           --revision ${lib.escapeShellArg "0"} \
-           --generator "nixos-render-docs ${lib.version}" \
-           --stylesheet style.css \
-           --stylesheet highlightjs/mono-blue.css \
-           --script ./highlightjs/highlight.pack.js \
-           --script ./highlightjs/loader.js \
-           --toc-depth 1 \
-           --chunk-toc-depth 1 \
-           "$1" \
-           "$(basename "$1" .md)".html
-    '';
   };
 in
   myLib.buildDashDocset {
@@ -68,15 +53,31 @@ in
     src = "${manual}/share/doc/home-manager";
     checkExpectations = {
       "programs.zsh.enable" = "Option";
-      "Rollbacks" = "Guide";
+      "home-manager.startAsUserService (NixOS option)" = "Option";
+      "home-manager.backupCommand (nix-darwin option)" = "Option";
+      "Rollbacks" = "Section";
       "Installing Home Manager" = "Section";
     };
     checkAbsences = [];
 
-    nativeBuildInputs = [wrapped-render-docs];
+    nativeBuildInputs = [
+      (myPkgs.render-docs-for-dash {
+        arguments = [
+          "--stylesheet"
+          "style.css"
+          "--stylesheet"
+          "highlightjs/mono-blue.css"
+          "--script"
+          "./highlightjs/highlight.pack.js"
+          "--script"
+          "./highlightjs/loader.js"
+        ];
+      })
+    ];
     # TODO: might have to patch out the "unresolved xref" error from nixos-generate-docs if it gets annoying.
     patchPhase = ''
       rm release-notes.xhtml
+      rm print.html
 
       mkdir -p ./options/options
       ${lib.getExe myPkgs.nixos-options-split} \
