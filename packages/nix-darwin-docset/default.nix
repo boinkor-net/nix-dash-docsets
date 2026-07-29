@@ -26,25 +26,6 @@
     # icon32x32 = "favicon.png";
     allowJS = true;
   };
-
-  wrapped-render-docs = writeShellApplication {
-    name = "nixos-render-docs";
-    runtimeInputs = [myPkgs.nixos-render-docs-without-xref];
-    text = ''
-      exec nixos-render-docs -j "$NIX_BUILD_CORES" manual html \
-           --manpage-urls ${writeText "manpage-urls.json" "{}"} \
-           --revision ${lib.escapeShellArg "0"} \
-           --generator "nixos-render-docs ${lib.version}" \
-           --stylesheet style.css \
-           --stylesheet highlightjs/mono-blue.css \
-           --script ./highlightjs/highlight.pack.js \
-           --script ./highlightjs/loader.js \
-           --toc-depth 1 \
-           --chunk-toc-depth 1 \
-           "$1" \
-           "$(basename "$1" .md)".html
-    '';
-  };
 in
   myLib.buildDashDocset {
     inherit version dashingConfig;
@@ -56,8 +37,20 @@ in
     };
     checkAbsences = [];
 
-    nativeBuildInputs = [wrapped-render-docs];
-    # TODO: might have to patch out the "unresolved xref" error from nixos-generate-docs if it gets annoying.
+    nativeBuildInputs = [
+      (myPkgs.render-docs-for-dash {
+        arguments = [
+          "--stylesheet"
+          "style.css"
+          "--stylesheet"
+          "highlightjs/mono-blue.css"
+          "--script"
+          "./highlightjs/highlight.pack.js"
+          "--script"
+          "./highlightjs/loader.js"
+        ];
+      })
+    ];
     patchPhase = ''
       mkdir -p ./options/options
       ${lib.getExe myPkgs.nixos-options-split} \
