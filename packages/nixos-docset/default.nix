@@ -12,27 +12,6 @@
   options = nixos.options;
   version = "1.0.${flake-inputs.nixpkgs.lastModifiedDate}-${flake-inputs.nixpkgs.shortRev}";
 
-  wrapped-render-docs = writeShellApplication {
-    name = "nixos-render-docs";
-    runtimeInputs = [myPkgs.nixos-render-docs-without-xref];
-    text = ''
-      exec nixos-render-docs -j "$NIX_BUILD_CORES" \
-           manual html \
-           --manpage-urls ${writeText "manpage-urls.json" "{}"} \
-           --revision ${lib.escapeShellArg "0"} \
-           --generator "nixos-render-docs ${lib.version}" \
-           --stylesheet style.css \
-           --stylesheet highlightjs/mono-blue.css \
-           --script ./highlightjs/highlight.pack.js \
-           --script ./highlightjs/loader.js \
-           --script ./anchor.min.js \
-           --script ./anchor-use.js \
-           --sidebar-depth 1 \
-           "$1" \
-           "$(basename "$1" .md)".html
-    '';
-  };
-
   dashingConfig = {
     name = "NixOS ${version} manual";
     package = "nixos";
@@ -64,7 +43,24 @@ in
     };
     checkAbsences = [];
 
-    nativeBuildInputs = [wrapped-render-docs];
+    nativeBuildInputs = [
+      (myPkgs.render-docs-for-dash {
+        arguments = [
+          "--stylesheet"
+          "style.css"
+          "--stylesheet"
+          "highlightjs/mono-blue.css"
+          "--script"
+          "./highlightjs/highlight.pack.js"
+          "--script"
+          "./highlightjs/loader.js"
+          "--script"
+          "./anchor.min.js"
+          "--script"
+          "./anchor-use.js"
+        ];
+      })
+    ];
     patchPhase = ''
       mkdir -p ./options/options
       ${lib.getExe myPkgs.nixos-options-split} \
