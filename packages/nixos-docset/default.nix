@@ -44,7 +44,7 @@ in
     checkAbsences = [];
 
     nativeBuildInputs = [
-      (myPkgs.render-docs-for-dash {
+      (myLib.renderDocsForDash {
         arguments = [
           "--stylesheet"
           "style.css"

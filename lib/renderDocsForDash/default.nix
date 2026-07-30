@@ -1,3 +1,4 @@
+# Hook that makes a version of nixos-render-docs with reasonable-ish default cli args.
 {
   nixos-render-docs,
   myPkgs,
