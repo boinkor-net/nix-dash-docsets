@@ -57,7 +57,7 @@ jobs:
   build:
     strategy:
       matrix:
-        derivation: ["#pages"]
+        derivation: ["pages"]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
