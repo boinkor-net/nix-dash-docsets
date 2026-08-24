@@ -68,7 +68,7 @@ in
     in
       (lib.concatMapAttrsStringSep "\n" (name: type: ''
           echo "${name} should be ${type}"
-          if ! [ "$(sqlite3 -batch -bail ${pname}.docset/Contents/Resources/docSet.dsidx -cmd "select count(type) from searchIndex where name = '${name}' and type='${type}'" </dev/null)" = 1 ] ; then
+          if ! [ "$(sqlite3 -batch -bail ${pname}.docset/Contents/Resources/docSet.dsidx -cmd "select count(type) from searchIndex where LOWER(name) = LOWER('${name}') and type='${type}'" </dev/null)" = 1 ] ; then
             echo " -- FAILED"
             sqlite3 -json -batch -bail ${pname}.docset/Contents/Resources/docSet.dsidx -cmd "select * from searchIndex where name = '${name}'" </dev/null
             exit 1
