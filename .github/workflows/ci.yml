@@ -6,7 +6,6 @@
     "if": "always() && github.event_name != 'merge_group'"
     "needs":
     - "ci_nix"
-    - "publish_docsets"
     "permissions":
       "actions": "read"
     "runs-on": "ubuntu-latest"
@@ -22,7 +21,6 @@
     "if": "always() && github.event_name == 'merge_group'"
     "needs":
     - "ci_nix"
-    - "publish_docsets"
     "permissions":
       "actions": "read"
     "runs-on": "ubuntu-latest"
@@ -42,9 +40,6 @@
   "ci_nix":
     "secrets": "inherit"
     "uses": "./.github/workflows/ci_nix.yml"
-  "publish_docsets":
-    "secrets": "inherit"
-    "uses": "./.github/workflows/publish_docsets.yml"
 "name": "CI"
 "on":
   "merge_group": {}

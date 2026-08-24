@@ -47,7 +47,23 @@
           .meta
           .platforms);
       in {
-        packages = myPkgs;
+        packages =
+          myPkgs
+          // {
+            pages = let
+              docset-feeds = config.legacyPackages.mkNixDocsetFeed {baseURL = "https://boinkor-net.github.io/nix-dash-docsets/daily";};
+              docset-feeds-zeal = config.legacyPackages.mkNixDocsetFeed {
+                baseURL = "https://boinkor-net.github.io/nix-dash-docsets/daily-zeal";
+                zealCompat = true;
+              };
+            in
+              pkgs.runCommand "daily-docsets" {} ''
+                mkdir -p $out
+                ln -s ${docset-feeds} $out/daily
+                ln -s ${docset-feeds-zeal} $out/daily-zeal
+                cp ${pages/index.html} $out/index.html
+              '';
+          };
 
         legacyPackages.mkNixDocsetFeed = pkgs.callPackage ./src/mkNixDocsetFeed {inherit myPkgs;};
 
