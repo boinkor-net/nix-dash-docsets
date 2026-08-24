@@ -2,7 +2,6 @@ name: "Publish docsets to gh pages"
 on:
   workflow_call:
   workflow_dispatch:
-  pull_request:
   push:
     branches:
       - main
@@ -24,9 +23,7 @@ jobs:
           primary-key: nix-${{ runner.os }}-${{ hashFiles('**/*.nix', '**/flake.lock') }}
           restore-prefixes-first-match: nix-${{ runner.os }}-
           gc-max-store-size-linux: 1G
-      - run: nix flake update
-        working-directory: pages
-      - run: nix build "./pages"
+      - run: nix build ".#pages"
       - name: Upload static files as artifact
         id: deployment
         uses: actions/upload-pages-artifact@v3
