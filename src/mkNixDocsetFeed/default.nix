@@ -9,7 +9,7 @@
   docsets = with myPkgs;
     [home-manager-docset nix-docset nix-darwin-docset nixpkgs-docset]
     ++ (
-      if stdenv.isLinux
+      if stdenv.hostPlatform.isLinux
       then [nixos-docset]
       else []
     );
